@@ -27,7 +27,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const app = express();
 const port = process.env.PORT || 3001;
 
-const corsOptions = {credentiials: true, origin: process.env.URL || '*'}
+const corsOptions = {credentials: true, origin: process.env.URL || '*'}
 
 // Configure static file serving
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
@@ -51,18 +51,27 @@ app.use('/api/v1/gallery', galleryRoute)
 app.use(errorHanding)
 
 // Create tables before starting the app
-createUsersTable()
-creatEventsTable()
-createCategoryTable()
-createFolderTabl()
-createGalleriesTable()
-createContentTable()
+async function initDB() {
+    try {
+    await createUsersTable();
+    await creatEventsTable();
+    await createCategoryTable();
+    await createFolderTabl();;
+    await createGalleriesTable();
+    await createContentTable();
+    console.log('All tables created successfully');
+    } catch (err) {
+        console.error('Error initializing database:', err);
+        process.exit(1);
+    }
+}
+initDB()
 
 
 // Testing POSTGRESQL Connection
 app.get('/', async(req, res) => {
     const result = await pool.query("SELECT current_database()")
-    res.send(`Database name is: ${result.rows[0]}`)
+    res.send(`Database name is: ${result.rows[0].current_database}`)
 })
 
 // Server running
