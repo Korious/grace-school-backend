@@ -13,6 +13,7 @@ import eventRoute from './routes/events.route.js'
 import categoryRoute from './routes/category.route.js'
 import folderRoute from './routes/folder.route.js'
 import galleryRoute from './routes/gallery.route.js'
+import contactRoute from './routes/contact.route.js'
 
 dotenv.config();
 
@@ -43,6 +44,7 @@ app.use('/api/v1/event', eventRoute)
 app.use('/api/v1/category', categoryRoute)
 app.use('/api/v1/folder', folderRoute)
 app.use('/api/v1/gallery', galleryRoute)
+app.use('/api/v1/contact', contactRoute)
 
 // Error handling middleware
 app.use(errorHanding)

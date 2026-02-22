@@ -23,33 +23,11 @@ mongoose.connect(mongo_URI,{
 .then(() => console.log('MongoDB Connected'))
 .catch(err => console.log(err));
 
-const ContactSchema = new mongoose.Schema({
-  name: String,
-  email: String,
-  phone: String,
-  message: String,
-  createdAt: {
-    type: Date,
-    default: Date.now
-  }
-});
 
-const Contact = mongoose.model('Contact', ContactSchema);
 
 app.use((req, res, next) => {
   console.log(req.method, req.url);
   next();
-});
-
-app.post('/api/contact', async (req, res) => {
-  try {
-    const newContact = new Contact(req.body);
-    await newContact.save();
-    res.status(201).json({ message: 'Message saved successfully' });
-  } catch (error) {
-    console.error('Error saving contact message:', error.message);
-    res.status(500).json({ message: 'Server error', error: error.message });
-  }
 });
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
