@@ -1,44 +1,33 @@
 import express from 'express';
-import mongoose from 'mongoose';
+import connectDB from './configs/db.js';
+import contactRoutes from './routes/contact.route.js';
 import cors from 'cors';
-// import dns from 'dns';
-// dns.setServers(['1.1.1.1', '8.8.8.8']);
 import dotenv from 'dotenv';
 
 dotenv.config();
 
 const app = express();
-const mongo_URI = process.env.MONGODB_URI;
-const PORT = process.env.PORT || 5001;
-const allowedOrigins = process.env.FRONTEND_URL.split(',').map(origin => origin.trim());
+const PORT = process.env.PORT || 5000;
 
-app.use(cors({
-  origin: allowedOrigins,
-  credentials: true
-}));
+// Allowed frontend origins from .env
+const allowedOrigins = process.env.FRONTEND_URL
+  ? process.env.FRONTEND_URL.split(',').map(origin => origin.trim())
+  : ['http://localhost:3000'];
+
+// Middleware
+app.use(cors({ origin: allowedOrigins, credentials: true }));
 app.use(express.json());
 
-mongoose.connect(mongo_URI,{
-    dbName: 'graceSchool_form'})
-.then(() => console.log('MongoDB Connected'))
-.catch(err => console.log(err));
+// Connect to MongoDB
+connectDB();  
 
-
-
+// Logging middleware
 app.use((req, res, next) => {
   console.log(req.method, req.url);
   next();
 });
 
-app.post('/api/contact', async (req, res) => {
-  try {
-    const newContact = new Contact(req.body);
-    await newContact.save();
-    res.status(201).json({ message: 'Message saved successfully' });
-  } catch (error) {
-    console.error('Error saving contact message:', error.message);
-    res.status(500).json({ message: 'Server error', error: error.message });
-  }
-});
+// Routes
+app.use('/api/contact', contactRoutes);
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
